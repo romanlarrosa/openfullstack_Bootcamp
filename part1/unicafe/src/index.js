@@ -11,14 +11,16 @@ const Statistics = ({ good, neutral, bad }) => {
     <>
       <h2>statistics</h2>
       {all !== 0 ? (
-        <>
-          <Statistic text="good" value={good}></Statistic>
-          <Statistic text="neutral" value={neutral}></Statistic>
-          <Statistic text="bad" value={bad}></Statistic>
-          <Statistic text="all" value={all}></Statistic>
-          <Statistic text="average" value={average}></Statistic>
-          <Statistic text="positive" value={positive + "%"}></Statistic>
-        </>
+        <table>
+          <tbody>
+            <Statistic text="good" value={good}></Statistic>
+            <Statistic text="neutral" value={neutral}></Statistic>
+            <Statistic text="bad" value={bad}></Statistic>
+            <Statistic text="all" value={all}></Statistic>
+            <Statistic text="average" value={average}></Statistic>
+            <Statistic text="positive" value={positive + "%"}></Statistic>
+          </tbody>
+        </table>
       ) : (
         <p>No feedback given</p>
       )}
@@ -29,9 +31,10 @@ const Statistics = ({ good, neutral, bad }) => {
 const Button = ({ text, onClick }) => <button onClick={onClick}>{text}</button>
 
 const Statistic = ({ text, value }) => (
-  <p>
-    {text} {value}
-  </p>
+  <tr>
+    <td>{text}</td>
+    <td>{value}</td>
+  </tr>
 )
 
 const App = () => {
