@@ -20,7 +20,7 @@ Muestra una anécdota. Inclye un botón para mostrar otra aleatoria, y otro para
 
 ## [Part 2️⃣](https://fullstackopen.com/es/part2)
 
-Ampliación sobre ⚛React. Formularios, peticiones al servidor y 🔶CSS sencillo
+Ampliación sobre ⚛React. Formularios, peticiones al servidor y 🔷CSS sencillo
 
 ### `courseinfo`
 
