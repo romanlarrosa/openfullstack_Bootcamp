@@ -1,14 +1,19 @@
 import React, { useState, useEffect } from "react"
-import axios from "axios"
+import PersonService from "./services/Persons"
 
-const Filter = ({ onChange, searchValue }) => {
+const Filter = ({ setSearchValue, searchValue }) => {
+  const filterOnChange = (event) => {
+    const value = event.target.value
+    setSearchValue(value)
+  }
+
   return (
     <div>
       Filter shown with
       <input
         autoComplete="new-password"
         type="text"
-        onChange={onChange}
+        onChange={filterOnChange}
         value={searchValue}
       />
     </div>
@@ -16,12 +21,60 @@ const Filter = ({ onChange, searchValue }) => {
 }
 
 const PersonForm = ({
-  handleSubmit,
-  nameOnChange,
-  numberOnChange,
   newName,
+  setNewName,
   newNumber,
+  setNewNumber,
+  persons,
+  setPersons,
 }) => {
+  const nameOnChange = (event) => {
+    const value = event.target.value
+
+    setNewName(value)
+  }
+
+  const numberOnChange = (event) => {
+    const value = event.target.value
+    setNewNumber(value)
+  }
+  const handleSubmit = (event) => {
+    event.preventDefault()
+
+    const index = persons.find((person) => person.name === newName)
+
+    if (index) {
+      if (
+        window.confirm(
+          `${newName} is already added, replace the old number with a new one?`
+        )
+      ) {
+        const newObject = {
+          name: newName,
+          number: newNumber,
+        }
+        PersonService.update(index.id, newObject)
+        const array = persons.map((person) => {
+          if (person.name === newObject.name) {
+            return { ...newObject, id: person.id }
+          } else return person
+        })
+        setPersons(array)
+        setNewName("")
+        setNewNumber("")
+      }
+    } else {
+      const newPersonToAdd = {
+        name: newName,
+        number: newNumber,
+      }
+      PersonService.create(newPersonToAdd)
+      setPersons([...persons, newPersonToAdd])
+
+      setNewName("")
+      setNewNumber("")
+    }
+  }
   return (
     <form onSubmit={handleSubmit}>
       <div>
@@ -51,18 +104,33 @@ const PersonForm = ({
   )
 }
 
-const Numbers = ({ persons, searchValue }) => {
+const Numbers = ({ persons, searchValue, setPersons }) => {
+  const handleDelete = (person) => () => {
+    if (window.confirm(`Delete ${person.name}?`)) {
+      PersonService.del(person.id)
+      const index = persons.indexOf(person)
+      if (index > -1) {
+        const array = [...persons]
+        array.splice(index, 1)
+        setPersons(array)
+      }
+    }
+  }
+
   return (
     <div>
       {persons
-        .filter((person) =>
-          person.name.toLowerCase().includes(searchValue.toLowerCase())
-        )
-        .map((person) => (
-          <p key={person.name}>
-            {person.name} {person.number}
-          </p>
-        ))}
+        ? persons
+            .filter((person) =>
+              person.name.toLowerCase().includes(searchValue.toLowerCase())
+            )
+            .map((person) => (
+              <p key={person.name}>
+                {person.name} {person.number}{" "}
+                <button onClick={handleDelete(person)}>delete</button>
+              </p>
+            ))
+        : "Loading..."}
     </div>
   )
 }
@@ -74,62 +142,33 @@ const App = () => {
   const [searchValue, setSearchValue] = useState("")
 
   useEffect(() => {
-    axios.get("http://localhost:3001/persons").then((response) => {
+    PersonService.getAll().then((response) => {
       setPersons(response.data)
     })
   }, [])
 
-  const nameOnChange = (event) => {
-    const value = event.target.value
-
-    setNewName(value)
-  }
-
-  const numberOnChange = (event) => {
-    const value = event.target.value
-    setNewNumber(value)
-  }
-
-  const filterOnChange = (event) => {
-    const value = event.target.value
-    setSearchValue(value)
-  }
-
-  const handleSubmit = (event) => {
-    event.preventDefault()
-
-    if (persons.find((person) => person.name === newName)) {
-      alert(`${newName} is already added to phonebook`)
-    } else {
-      const newPersonToAdd = {
-        name: newName,
-        number: newNumber,
-      }
-      console.log({ newPersonToAdd })
-      setPersons([...persons, newPersonToAdd])
-
-      setNewName("")
-      setNewNumber("")
-    }
-  }
-
   return (
     <div>
       <h2>Phonebook</h2>
-      <Filter onChange={filterOnChange} searchValue={searchValue} />
+      <Filter setSearchValue={setSearchValue} searchValue={searchValue} />
 
       <h3>add a new</h3>
 
       <PersonForm
-        handleSubmit={handleSubmit}
-        nameOnChange={nameOnChange}
-        numberOnChange={numberOnChange}
         newName={newName}
+        setNewName={setNewName}
         newNumber={newNumber}
+        setNewNumber={setNewNumber}
+        persons={persons}
+        setPersons={setPersons}
       />
 
       <h3>Numbers</h3>
-      <Numbers persons={persons} searchValue={searchValue} />
+      <Numbers
+        persons={persons}
+        searchValue={searchValue}
+        setPersons={setPersons}
+      />
     </div>
   )
 }
