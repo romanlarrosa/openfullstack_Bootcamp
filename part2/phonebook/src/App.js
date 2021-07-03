@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from "react"
 import PersonService from "./services/Persons"
 
+import InfoMessage from "./components/InfoMessage"
+import ErrorMessage from "./components/ErrorMessage"
+
 const Filter = ({ setSearchValue, searchValue }) => {
   const filterOnChange = (event) => {
     const value = event.target.value
@@ -27,6 +30,8 @@ const PersonForm = ({
   setNewNumber,
   persons,
   setPersons,
+  setInfoMessage,
+  setErrorMessage,
 }) => {
   const nameOnChange = (event) => {
     const value = event.target.value
@@ -54,14 +59,25 @@ const PersonForm = ({
           number: newNumber,
         }
         PersonService.update(index.id, newObject)
-        const array = persons.map((person) => {
-          if (person.name === newObject.name) {
-            return { ...newObject, id: person.id }
-          } else return person
-        })
-        setPersons(array)
-        setNewName("")
-        setNewNumber("")
+          .then((response) => {
+            setInfoMessage(`Updated ${newObject.name}`)
+            const array = persons.map((person) => {
+              if (person.name === newObject.name) {
+                return { ...newObject, id: response.data.id }
+              } else return person
+            })
+            setPersons(array)
+            setNewName("")
+            setNewNumber("")
+            setTimeout(() => setInfoMessage(""), 2000)
+          })
+          .catch((err) => {
+            console.log(err.response)
+            if (err.response.status === 404) {
+              setErrorMessage(`${newObject.name} has alredy been removed`)
+              setTimeout(() => setErrorMessage(""), 2000)
+            }
+          })
       }
     } else {
       const newPersonToAdd = {
@@ -69,6 +85,15 @@ const PersonForm = ({
         number: newNumber,
       }
       PersonService.create(newPersonToAdd)
+        .then((response) => {
+          newPersonToAdd.id = response.data.id
+          setInfoMessage(`Added ${newPersonToAdd.name}`)
+          setTimeout(() => setInfoMessage(""), 2000)
+        })
+        .catch((err) => {
+          setErrorMessage(err)
+          setTimeout(() => setErrorMessage(""), 2000)
+        })
       setPersons([...persons, newPersonToAdd])
 
       setNewName("")
@@ -140,6 +165,8 @@ const App = () => {
   const [newName, setNewName] = useState("")
   const [newNumber, setNewNumber] = useState("")
   const [searchValue, setSearchValue] = useState("")
+  const [infoMessage, setInfoMessage] = useState("")
+  const [errorMessage, setErrorMessage] = useState("")
 
   useEffect(() => {
     PersonService.getAll().then((response) => {
@@ -150,10 +177,10 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      {infoMessage ? <InfoMessage string={infoMessage} /> : ""}
+      {errorMessage ? <ErrorMessage string={errorMessage} /> : ""}
       <Filter setSearchValue={setSearchValue} searchValue={searchValue} />
-
       <h3>add a new</h3>
-
       <PersonForm
         newName={newName}
         setNewName={setNewName}
@@ -161,8 +188,9 @@ const App = () => {
         setNewNumber={setNewNumber}
         persons={persons}
         setPersons={setPersons}
+        setInfoMessage={setInfoMessage}
+        setErrorMessage={setErrorMessage}
       />
-
       <h3>Numbers</h3>
       <Numbers
         persons={persons}
