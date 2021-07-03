@@ -6,15 +6,15 @@ Este repositorio alojará el código generado mediante la realización del bootc
 
 En esta parte se tratarán aspectos básicos de 🟨Javascript y ⚛React.
 
-### `courseinfo`
+### `courseinfo ℹ`
 
 Muestra información sobre un curso
 
-### `unicafe`
+### `unicafe ☕`
 
 Aplicación para obtener feedback en un negocio. Muestra botones para votar además de estadísticas sobre las opiniones de los usuarios.
 
-### `anecdotes`
+### `anecdotes 💻`
 
 Muestra una anécdota. Inclye un botón para mostrar otra aleatoria, y otro para votala, de manera que muestra también la más votada.
 
@@ -22,6 +22,16 @@ Muestra una anécdota. Inclye un botón para mostrar otra aleatoria, y otro para
 
 Ampliación sobre ⚛React. Formularios, peticiones al servidor y 🔷CSS sencillo
 
-### `courseinfo`
+### `courseinfo ℹ`
 
 Ampliación del ejercicio de la parte anterior. Ahora permite varios cursos.
+
+### `countrydata 🌍`
+
+Permite realizar una búsqueda de paises, que recibe desde una API. Cuando la lista contiene solo uno, muestra infromación sobre éste.
+
+- Ampliación: Cuando se muestra un único país, también se muestra su información meteorológica, que es servida dese una API ([WeatherStack](https://weatherstack.com/))
+
+### `phonebook 📓`
+
+Permite almacenar contactos junto a su número de teléfono. Es posible agregar, eliiminar o modificarlos. Se hace uso de [Json-Server](https://www.npmjs.com/package/json-server) para emular el servidor.
