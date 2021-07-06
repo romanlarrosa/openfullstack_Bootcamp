@@ -35,3 +35,11 @@ Permite realizar una búsqueda de paises, que recibe desde una API. Cuando la li
 ### `phonebook 📓`
 
 Permite almacenar contactos junto a su número de teléfono. Es posible agregar, eliiminar o modificarlos. Se hace uso de [Json-Server](https://www.npmjs.com/package/json-server) para emular el servidor.
+
+## [Part 3️⃣](https://fullstackopen.com/es/part3)
+
+### `phonebook_API 📓`
+
+Inicio del desarrollo de la API para manejar los datos de contactos y sus números de teléfono relativa al frontend desarrollado con anterioridad. Uso de express y distintos middleware. La API se encuentra alojada en Heroku, [API Phonebook](https://api-phonebook-rll.herokuapp.com/), junto con el frontend modificado para que funcione en linea.
+
+Más información [aquí](/part3/phonebook_API)
