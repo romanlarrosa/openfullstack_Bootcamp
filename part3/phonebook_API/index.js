@@ -16,7 +16,7 @@ app.use(
 )
 
 const errorHandler = (error, request, response, next) => {
-  console.error(error.message)
+  console.error("\x1b[35m%s\x1b[0m", error.message)
 
   if (error.name === "CastError") {
     return response.status(400).send({ error: "malformatted id" })
@@ -54,6 +54,24 @@ app.get("/api/persons", (request, response) => {
   })
 })
 
+app.post("/api/persons", (request, response) => {
+  const body = request.body
+  if (!body.name || !body.number) {
+    return response.status(400).json({
+      error: "Content missing",
+    })
+  }
+
+  const person = new Person({
+    name: body.name,
+    number: body.number,
+  })
+
+  person.save().then((savedPerson) => {
+    response.json(savedPerson)
+  })
+})
+
 app.get("/api/persons/:id", (request, response, next) => {
   Person.findById(request.params.id)
     .then((person) => {
@@ -74,22 +92,8 @@ app.delete("/api/persons/:id", (request, response, next) => {
     .catch((error) => next(error))
 })
 
-app.post("/api/persons", (request, response) => {
-  const body = request.body
-  if (!body.name || !body.number) {
-    return response.status(400).json({
-      error: "Content missing",
-    })
-  }
-
-  const person = new Person({
-    name: body.name,
-    number: body.number,
-  })
-
-  person.save().then((savedPerson) => {
-    response.json(savedPerson)
-  })
+app.put("api/persons/:id", (request, response) => {
+  //TODO Change info in the server
 })
 
 app.get("/info", (request, response) => {
