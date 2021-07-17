@@ -92,16 +92,37 @@ app.delete("/api/persons/:id", (request, response, next) => {
     .catch((error) => next(error))
 })
 
-app.put("api/persons/:id", (request, response) => {
+app.put("/api/persons/:id", (request, response, next) => {
   //TODO Change info in the server
+  const { id } = request.params
+  const body = request.body
+
+  if (!body.name || !body.number) {
+    return response.status(400).json({
+      error: "Content missing",
+    })
+  }
+
+  const person = {
+    name: body.name,
+    number: body.number,
+  }
+
+  Person.findByIdAndUpdate(id, person, { new: true })
+    .then((updatedPerson) => {
+      response.json(updatedPerson)
+    })
+    .catch((error) => next(error))
 })
 
 app.get("/info", (request, response) => {
-  let string = ""
-  string += `<p>Phonebook has info for ${persons.length} people</p>`
-  string += `<p>${Date(Date.now()).toString()}</p>`
+  Person.find({}).then((result) => {
+    let string = ""
+    string += `<p>Phonebook has info for ${result.length} people</p>`
+    string += `<p>${Date(Date.now()).toString()}</p>`
 
-  response.send(string)
+    response.send(string)
+  })
 })
 
 const unknownEndpoint = (request, response) => {
