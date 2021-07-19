@@ -76,6 +76,9 @@ const PersonForm = ({
             if (err.response.status === 404) {
               setErrorMessage(`${newObject.name} has alredy been removed`)
               setTimeout(() => setErrorMessage(""), 2000)
+            } else {
+              setErrorMessage(err.response.data.error)
+              setTimeout(() => setErrorMessage(""), 2000)
             }
           })
       }
@@ -89,15 +92,15 @@ const PersonForm = ({
           newPersonToAdd.id = response.data.id
           setInfoMessage(`Added ${newPersonToAdd.name}`)
           setTimeout(() => setInfoMessage(""), 2000)
+          setPersons([...persons, newPersonToAdd])
+
+          setNewName("")
+          setNewNumber("")
         })
         .catch((err) => {
-          setErrorMessage(err)
+          setErrorMessage(err.response.data.error)
           setTimeout(() => setErrorMessage(""), 2000)
         })
-      setPersons([...persons, newPersonToAdd])
-
-      setNewName("")
-      setNewNumber("")
     }
   }
   return (

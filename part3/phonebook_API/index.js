@@ -4,6 +4,8 @@ const cors = require("cors")
 require("dotenv").config()
 
 const Person = require("./models/person")
+const errorHandler = require("./handlers/errorHandler")
+const unknownEndpointHandler = require("./handlers/unknownEndpointHandler")
 
 const app = express()
 app.use(express.json())
@@ -14,8 +16,6 @@ morgan.token("body", (req) => JSON.stringify(req.body))
 app.use(
   morgan(":method :url :status :res[content-length] - :response-time ms :body")
 )
-
-const errorHandler = require("./handlers/errorHandler")
 
 app.get("/api/persons", (request, response) => {
   Person.find({}).then((result) => {
@@ -60,7 +60,6 @@ app.delete("/api/persons/:id", (request, response, next) => {
 })
 
 app.put("/api/persons/:id", (request, response, next) => {
-  //TODO Change info in the server
   const { id } = request.params
   const body = request.body
 
@@ -75,7 +74,11 @@ app.put("/api/persons/:id", (request, response, next) => {
     number: body.number,
   }
 
-  Person.findByIdAndUpdate(id, person, { new: true })
+  Person.findByIdAndUpdate(id, person, {
+    new: true,
+    runValidators: true,
+    context: "query",
+  })
     .then((updatedPerson) => {
       response.json(updatedPerson)
     })
@@ -92,11 +95,8 @@ app.get("/info", (request, response) => {
   })
 })
 
-const unknownEndpoint = (request, response) => {
-  response.status(404).send({ error: "unknown endpoint" })
-}
 //Middleware for unknown endpoints
-app.use(unknownEndpoint)
+app.use(unknownEndpointHandler)
 
 //Middleware for errors
 app.use(errorHandler)
