@@ -1,29 +1,29 @@
-const express = require("express")
-const morgan = require("morgan")
-const cors = require("cors")
-require("dotenv").config()
+const express = require('express')
+const morgan = require('morgan')
+const cors = require('cors')
+require('dotenv').config()
 
-const Person = require("./models/person")
-const errorHandler = require("./handlers/errorHandler")
-const unknownEndpointHandler = require("./handlers/unknownEndpointHandler")
+const Person = require('./models/person')
+const errorHandler = require('./handlers/errorHandler')
+const unknownEndpointHandler = require('./handlers/unknownEndpointHandler')
 
 const app = express()
 app.use(express.json())
-app.use(express.static("build"))
+app.use(express.static('build'))
 app.use(cors())
 
-morgan.token("body", (req) => JSON.stringify(req.body))
+morgan.token('body', (req) => JSON.stringify(req.body))
 app.use(
-  morgan(":method :url :status :res[content-length] - :response-time ms :body")
+  morgan(':method :url :status :res[content-length] - :response-time ms :body')
 )
 
-app.get("/api/persons", (request, response) => {
+app.get('/api/persons', (request, response) => {
   Person.find({}).then((result) => {
     response.json(result)
   })
 })
 
-app.post("/api/persons", (request, response, next) => {
+app.post('/api/persons', (request, response, next) => {
   const body = request.body
 
   const person = new Person({
@@ -39,7 +39,7 @@ app.post("/api/persons", (request, response, next) => {
     .catch((error) => next(error))
 })
 
-app.get("/api/persons/:id", (request, response, next) => {
+app.get('/api/persons/:id', (request, response, next) => {
   Person.findById(request.params.id)
     .then((person) => {
       if (person) {
@@ -51,21 +51,21 @@ app.get("/api/persons/:id", (request, response, next) => {
     .catch((error) => next(error))
 })
 
-app.delete("/api/persons/:id", (request, response, next) => {
+app.delete('/api/persons/:id', (request, response, next) => {
   Person.findByIdAndRemove(request.params.id)
-    .then((result) => {
+    .then(() => {
       response.status(204).end()
     })
     .catch((error) => next(error))
 })
 
-app.put("/api/persons/:id", (request, response, next) => {
+app.put('/api/persons/:id', (request, response, next) => {
   const { id } = request.params
   const body = request.body
 
   if (!body.name || !body.number) {
     return response.status(400).json({
-      error: "Content missing",
+      error: 'Content missing',
     })
   }
 
@@ -77,7 +77,7 @@ app.put("/api/persons/:id", (request, response, next) => {
   Person.findByIdAndUpdate(id, person, {
     new: true,
     runValidators: true,
-    context: "query",
+    context: 'query',
   })
     .then((updatedPerson) => {
       response.json(updatedPerson)
@@ -85,9 +85,9 @@ app.put("/api/persons/:id", (request, response, next) => {
     .catch((error) => next(error))
 })
 
-app.get("/info", (request, response) => {
+app.get('/info', (request, response) => {
   Person.find({}).then((result) => {
-    let string = ""
+    let string = ''
     string += `<p>Phonebook has info for ${result.length} people</p>`
     string += `<p>${Date(Date.now()).toString()}</p>`
 
