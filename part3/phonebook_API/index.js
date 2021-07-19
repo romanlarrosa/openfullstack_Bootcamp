@@ -15,17 +15,7 @@ app.use(
   morgan(":method :url :status :res[content-length] - :response-time ms :body")
 )
 
-const errorHandler = (error, request, response, next) => {
-  console.error("\x1b[35m%s\x1b[0m", error.message)
-
-  if (error.name === "CastError") {
-    return response.status(400).send({ error: "malformatted id" })
-  } else if (error.name === "ValidationError") {
-    return response.status(400).json({ error: error.message })
-  }
-
-  next(error)
-}
+const errorHandler = require("./handlers/errorHandler")
 
 app.get("/api/persons", (request, response) => {
   Person.find({}).then((result) => {
